@@ -1,229 +1,181 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:iroko/core/theme/app_theme.dart';
-import 'package:iroko/domain/entities/user.dart';
+import 'package:iroko/presentation/providers/user_provider.dart';
 
-class ProviderProfileScreen extends StatelessWidget {
-  final Provider provider;
+class ProviderProfileScreen extends StatefulWidget {
+  const ProviderProfileScreen({Key? key}) : super(key: key);
 
-  const ProviderProfileScreen({
-    Key? key,
-    required this.provider,
-  }) : super(key: key);
+  @override
+  State<ProviderProfileScreen> createState() => _ProviderProfileScreenState();
+}
+
+class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserProvider>().loadUserProfile();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profil du prestataire'),
+        title: const Text('Mon Profil'),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              // TODO: Navigate to edit profile
+            },
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Container(
-              color: AppTheme.primaryColor,
-              padding: const EdgeInsets.all(AppTheme.spacingLarge),
+      body: Consumer<UserProvider>(
+        builder: (context, userProvider, _) {
+          if (userProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final user = userProvider.user;
+          if (user == null) {
+            return Center(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
+                  const Text('Profil non disponible'),
+                  const SizedBox(height: AppTheme.spacingMedium),
+                  ElevatedButton(
+                    onPressed: () => userProvider.loadUserProfile(),
+                    child: const Text('Recharger'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Container(
+                  color: AppTheme.primaryColor,
+                  padding: const EdgeInsets.all(AppTheme.spacingLarge),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.white,
-                        backgroundImage: provider.profileImage != null
-                            ? NetworkImage(provider.profileImage!)
-                            : null,
-                        child: provider.profileImage == null
-                            ? Text(
-                                provider.name.isNotEmpty
-                                    ? provider.name[0].toUpperCase()
-                                    : 'P',
-                                style: const TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.primaryColor,
-                                ),
-                              )
-                            : null,
-                      ),
-                      const SizedBox(width: AppTheme.spacingMedium),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              provider.name,
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Colors.white,
+                            child: Text(
+                              user.name.isNotEmpty
+                                  ? user.name[0].toUpperCase()
+                                  : 'P',
                               style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
+                                fontSize: 32,
                                 fontWeight: FontWeight.bold,
+                                color: AppTheme.primaryColor,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Row(
+                          ),
+                          const SizedBox(width: AppTheme.spacingMedium),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(Icons.star, color: Colors.amber, size: 16),
-                                const SizedBox(width: 4),
                                 Text(
-                                  '${provider.averageRating?.toStringAsFixed(1) ?? 'N/A'} (${provider.reviewCount ?? 0} avis)',
+                                  user.name,
                                   style: const TextStyle(
                                     color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  user.email,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
                                     fontSize: 14,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 4),
-                            if (provider.isVerified)
-                              Row(
-                                children: const [
-                                  Icon(Icons.verified, color: Colors.green, size: 16),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    'Vérifié par IROKO',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // Profile Info
+                Padding(
+                  padding: const EdgeInsets.all(AppTheme.spacingLarge),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Informations personnelles',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: AppTheme.spacingMedium),
+                      _buildInfoCard('Email', user.email),
+                      _buildInfoCard('Rôle', user.role.toUpperCase()),
+                      _buildInfoCard('ID Utilisateur', user.id),
+                      const SizedBox(height: AppTheme.spacingLarge),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).pushReplacementNamed('/login');
+                        },
+                        icon: const Icon(Icons.logout),
+                        label: const Text('Déconnexion'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            // Content
-            Padding(
-              padding: const EdgeInsets.all(AppTheme.spacingMedium),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // About
-                  if (provider.bio != null) ...[
-                    Text(
-                      'À propos',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: AppTheme.spacingSmall),
-                    Text(
-                      provider.bio!,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: AppTheme.spacingLarge),
-                  ],
-                  // Specialties
-                  if (provider.specialties != null &&
-                      provider.specialties!.isNotEmpty) ...[
-                    Text(
-                      'Spécialités',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: AppTheme.spacingSmall),
-                    Wrap(
-                      spacing: AppTheme.spacingSmall,
-                      runSpacing: AppTheme.spacingSmall,
-                      children: [
-                        for (final specialty in provider.specialties!)
-                          Chip(
-                            label: Text(specialty),
-                            backgroundColor:
-                                AppTheme.primaryColor.withOpacity(0.1),
-                            labelStyle: const TextStyle(
-                              color: AppTheme.primaryColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: AppTheme.spacingLarge),
-                  ],
-                  // Hourly Rate
-                  if (provider.hourlyRate != null) ...[
-                    Text(
-                      'Tarif horaire',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: AppTheme.spacingSmall),
-                    Text(
-                      '${provider.hourlyRate?.toStringAsFixed(0) ?? 'N/A'} FCFA/heure',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.primaryColor,
-                          ),
-                    ),
-                    const SizedBox(height: AppTheme.spacingLarge),
-                  ],
-                  // Location
-                  if (provider.location != null) ...[
-                    Text(
-                      'Localisation',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: AppTheme.spacingSmall),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on, size: 16),
-                        const SizedBox(width: 4),
-                        Text(provider.location!),
-                      ],
-                    ),
-                    const SizedBox(height: AppTheme.spacingLarge),
-                  ],
-                  // Certifications
-                  if (provider.certifications != null &&
-                      provider.certifications!.isNotEmpty) ...[
-                    Text(
-                      'Certifications',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: AppTheme.spacingSmall),
-                    for (final cert in provider.certifications!)
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          bottom: AppTheme.spacingSmall,
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.check_circle, color: Colors.green, size: 16),
-                            const SizedBox(width: 8),
-                            Expanded(child: Text(cert)),
-                          ],
-                        ),
-                      ),
-                    const SizedBox(height: AppTheme.spacingLarge),
-                  ],
-                  // Action Buttons
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // TODO: Implement booking/contact logic
-                      },
-                      child: const Text('Contacter le prestataire'),
-                    ),
-                  ),
-                  const SizedBox(height: AppTheme.spacingSmall),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () {
-                        // TODO: Implement view calendar
-                      },
-                      child: const Text('Voir les disponibilités'),
-                    ),
-                  ),
-                ],
-              ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(String label, String value) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
+      padding: const EdgeInsets.all(AppTheme.spacingMedium),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppTheme.grey300),
+        borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              color: AppTheme.grey600,
+              fontSize: 12,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+        ],
       ),
     );
   }

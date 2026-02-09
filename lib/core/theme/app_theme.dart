@@ -14,6 +14,8 @@ class AppTheme {
   // Neutral Colors
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);
+  static const Color grey = Color(0xFF9E9E9E);
+  static const Color greyLight = Color(0xFFF5F5F5);
   static const Color grey100 = Color(0xFFF5F5F5);
   static const Color grey200 = Color(0xFFEEEEEE);
   static const Color grey300 = Color(0xFFE0E0E0);
@@ -134,7 +136,7 @@ class AppTheme {
         brightness: Brightness.light,
         padding: const EdgeInsets.symmetric(horizontal: spacingSmall),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: elevationSmall,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusMedium),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iroko/core/theme/app_theme.dart';
+import 'package:iroko/presentation/providers/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -12,7 +15,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
   bool _obscurePassword = true;
 
   @override
@@ -22,14 +24,27 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() {
+  void _handleLogin(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      // TODO: Implement login logic
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() => _isLoading = false);
-        // Navigate to home screen
-      });
+      final authProvider = context.read<AuthProvider>();
+      
+      final success = await authProvider.login(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+
+      if (mounted) {
+        if (success) {
+          context.go('/home');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(authProvider.errorMessage ?? 'Erreur de connexion'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -153,19 +168,25 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: AppTheme.spacingLarge),
               // Login Button
-              ElevatedButton(
-                onPressed: _isLoading ? null : _handleLogin,
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(AppTheme.white),
-                        ),
-                      )
-                    : const Text('Se connecter'),
+              Consumer<AuthProvider>(
+                builder: (context, authProvider, _) {
+                  return ElevatedButton(
+                    onPressed: authProvider.isLoading
+                        ? null
+                        : () => _handleLogin(context),
+                    child: authProvider.isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(AppTheme.white),
+                            ),
+                          )
+                        : const Text('Se connecter'),
+                  );
+                },
               ),
               const SizedBox(height: AppTheme.spacingMedium),
               // Divider
@@ -197,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Text('Vous n\'avez pas de compte ?'),
                   TextButton(
                     onPressed: () {
-                      // TODO: Navigate to register
+                      context.push('/register');
                     },
                     child: const Text(
                       'S\'inscrire',

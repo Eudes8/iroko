@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:iroko/core/services/http_service.dart';
 import 'package:iroko/core/theme/app_theme.dart';
+import 'package:iroko/core/routing/app_router.dart';
 import 'package:iroko/data/repositories/auth_repository.dart';
 import 'package:iroko/data/repositories/mission_repository.dart';
 import 'package:iroko/domain/usecases/auth_usecases.dart';
 import 'package:iroko/domain/usecases/mission_usecases.dart';
-import 'package:iroko/presentation/auth/login_screen.dart';
-import 'package:iroko/presentation/home/home_screen.dart';
+import 'package:iroko/presentation/providers/auth_provider.dart';
+import 'package:iroko/presentation/providers/mission_provider.dart';
+import 'package:iroko/presentation/providers/user_provider.dart';
 
 // Service Locator
 final getIt = GetIt.instance;
@@ -117,23 +120,8 @@ void setupServiceLocator() {
 
 
 // Router Configuration
-GoRouter createRouter() {
-  return GoRouter(
-    initialLocation: '/login',
-    routes: [
-      GoRoute(
-        path: '/login',
-        name: 'login',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/home',
-        name: 'home',
-        builder: (context, state) => const HomeScreen(),
-      ),
-      // Add more routes as needed
-    ],
-  );
+GoRouter createRouter(BuildContext context) {
+  return router;
 }
 
 void main() async {
@@ -148,14 +136,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'IROKO - Plateforme de Services',
-      theme: AppTheme.lightTheme(),
-      localizationsDelegates: const [
-        // Add localization delegates if needed
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MissionProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserProvider(),
+        ),
       ],
-      routerConfig: createRouter(),
-      debugShowCheckedModeBanner: false,
+      child: MaterialApp.router(
+        title: 'IROKO - Plateforme de Services',
+        theme: AppTheme.lightTheme(),
+        routerConfig: router,
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
