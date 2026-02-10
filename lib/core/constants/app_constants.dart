@@ -3,7 +3,8 @@ class AppConstants {
   // IMPORTANT: Mettre à jour avec votre URL backend réelle
   static const String baseUrl = 'http://localhost:3000/api/v1'; // Dev local
   // static const String baseUrl = 'http://10.0.2.2:3000/api/v1'; // Android emulator
-  // static const String baseUrl = 'https://iroko-backend.railway.app/api/v1'; // Production
+  // static const String baseUrl = 'https://iroko-backend.onrender.com/api/v1'; // Production Render.com (GRATUIT)
+  // static const String baseUrl = 'https://iroko-backend.railway.app/api/v1'; // Production Railway.app
   
   static const String socketUrl = 'https://socket.iroko.ci';
   

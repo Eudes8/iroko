@@ -1,0 +1,100 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Verify Flutter installation
+        run: flutter doctor -v
+
+      - name: Build APK (Release)
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iroko-apk-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+      - name: Create Release (only on main/master push)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ github.run_number }}
+          name: IROKO Release v${{ github.run_number }}
+          body: |
+            ## 🚀 IROKO Android APK - Release v${{ github.run_number }}
+
+            ### 📦 APK Release
+            - **Version:** ${{ github.run_number }}
+            - **Date:** ${{ github.event.head_commit.timestamp }}
+            - **Commit:** ${{ github.sha }}
+
+            ### 📝 Changelog
+            - Automatic build from commit ${{ github.sha }}
+            - Built on ${{ github.event.head_commit.timestamp }}
+
+            ### 📥 Download
+            Download the APK from the assets below.
+
+            ---
+            **Built with ❤️ using GitHub Actions**
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment PR with APK link (only on PR)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## 📱 APK Build Complete!\n\n' +
+                    '✅ APK has been built successfully!\n\n' +
+                    '### 📦 Download\n' +
+                    'You can download the APK from the artifacts section of this workflow run.\n\n' +
+                    '### 🔗 Workflow Run\n' +
+                    'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\n' +
+                    '---\n' +
+                    '**Built with ❤️ using GitHub Actions**'
+            })

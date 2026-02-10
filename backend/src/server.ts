@@ -15,6 +15,9 @@ import paymentRoutes from './routes/payment.routes';
 // Import middleware
 import { errorHandler } from './middleware/errorHandler';
 
+// Import health controller
+import { HealthController } from './health.controller';
+
 const app: Application = express();
 const prisma = new PrismaClient();
 
@@ -42,14 +45,9 @@ app.use((_req: Request, _res: Response, _next: NextFunction) => {
 });
 
 // ====== ROUTES ======
-app.get('/health', (_req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'ok',
-    message: 'IROKO Backend is running',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-  });
-});
+// Health check endpoints (pour Render.com et monitoring)
+app.get('/health', HealthController.healthCheck);
+app.get('/health/detailed', HealthController.detailedHealthCheck);
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/missions', missionRoutes);

@@ -1,0 +1,29 @@
+# Configuration Render.com pour IROKO Backend
+# Plan: Free Tier (Web Service + PostgreSQL Database)
+
+services:
+  # Service Web Node.js
+  - type: web
+    name: iroko-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run db:migrate && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      # Base de données Neon (gratuite)
+      # Configurez DATABASE_URL via les secrets Render
+      - key: DATABASE_URL
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRY
+        value: 7d
+      - key: CORS_ORIGIN
+        value: https://iroko.vercel.app
+      - key: LOG_LEVEL
+        value: info
