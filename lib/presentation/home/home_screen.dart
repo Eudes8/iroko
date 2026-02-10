@@ -158,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen>
     return Chip(
       label: Text(label),
       onDeleted: () {},
-      backgroundColor: AppTheme.primaryLight.withValues(alpha: 0.1),
+      backgroundColor: AppTheme.primaryLight.withOpacity(0.1),
       labelStyle: const TextStyle(color: AppTheme.primaryColor),
     );
   }

@@ -247,7 +247,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                                 color: _selectedRole == 'client'
-                                    ? AppTheme.primaryColor.withValues(alpha: 0.1)
+                                    ? AppTheme.primaryColor.withOpacity(0.1)
                                     : AppTheme.white,
                               ),
                               child: Column(
@@ -291,7 +291,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                                 color: _selectedRole == 'provider'
-                                    ? AppTheme.primaryColor.withValues(alpha: 0.1)
+                                    ? AppTheme.primaryColor.withOpacity(0.1)
                                     : AppTheme.white,
                               ),
                               child: Column(
