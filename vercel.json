@@ -5,11 +5,6 @@
   "outputDirectory": "build/web",
   "installCommand": "flutter pub get",
   "framework": null,
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
