@@ -2,32 +2,19 @@ import 'package:iroko/domain/entities/user.dart';
 
 class UserModel extends User {
   UserModel({
-    required String id,
-    required String email,
-    required String name,
-    String? phone,
-    String? profileImage,
-    required String role,
-    String? bio,
-    double? averageRating,
-    int? reviewCount,
-    required bool isVerified,
-    required DateTime createdAt,
-    required DateTime updatedAt,
-  }) : super(
-    id: id,
-    email: email,
-    name: name,
-    phone: phone,
-    profileImage: profileImage,
-    role: role,
-    bio: bio,
-    averageRating: averageRating,
-    reviewCount: reviewCount,
-    isVerified: isVerified,
-    createdAt: createdAt,
-    updatedAt: updatedAt,
-  );
+    required super.id,
+    required super.email,
+    required super.name,
+    super.phone,
+    super.profileImage,
+    required super.role,
+    super.bio,
+    super.averageRating,
+    super.reviewCount,
+    required super.isVerified,
+    required super.createdAt,
+    required super.updatedAt,
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -45,48 +32,28 @@ class UserModel extends User {
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
   }
-
-  Map<String, dynamic> toJson() => super.toJson();
 }
 
 class ProviderModel extends Provider {
   ProviderModel({
-    required String id,
-    required String email,
-    required String name,
-    String? phone,
-    String? profileImage,
-    required String role,
-    String? bio,
-    double? averageRating,
-    int? reviewCount,
-    required bool isVerified,
-    required DateTime createdAt,
-    required DateTime updatedAt,
-    List<String>? specialties,
-    double? hourlyRate,
-    String? location,
-    List<String>? certifications,
-    String? providerType,
-  }) : super(
-    id: id,
-    email: email,
-    name: name,
-    phone: phone,
-    profileImage: profileImage,
-    role: role,
-    bio: bio,
-    averageRating: averageRating,
-    reviewCount: reviewCount,
-    isVerified: isVerified,
-    createdAt: createdAt,
-    updatedAt: updatedAt,
-    specialties: specialties,
-    hourlyRate: hourlyRate,
-    location: location,
-    certifications: certifications,
-    providerType: providerType,
-  );
+    required super.id,
+    required super.email,
+    required super.name,
+    super.phone,
+    super.profileImage,
+    required super.role,
+    super.bio,
+    super.averageRating,
+    super.reviewCount,
+    required super.isVerified,
+    required super.createdAt,
+    required super.updatedAt,
+    super.specialties,
+    super.hourlyRate,
+    super.location,
+    super.certifications,
+    super.providerType,
+  });
 
   factory ProviderModel.fromJson(Map<String, dynamic> json) {
     return ProviderModel(
@@ -109,9 +76,6 @@ class ProviderModel extends Provider {
       providerType: json['providerType'] as String?,
     );
   }
-
-  @override
-  Map<String, dynamic> toJson() => super.toJson();
 }
 
 class AuthResponse {

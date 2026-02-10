@@ -4,7 +4,7 @@ import 'package:iroko/core/theme/app_theme.dart';
 import 'package:iroko/presentation/providers/user_provider.dart';
 
 class ProviderProfileScreen extends StatefulWidget {
-  const ProviderProfileScreen({Key? key}) : super(key: key);
+  const ProviderProfileScreen({super.key});
 
   @override
   State<ProviderProfileScreen> createState() => _ProviderProfileScreenState();

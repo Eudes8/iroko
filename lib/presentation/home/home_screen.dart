@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iroko/core/theme/app_theme.dart';
-import 'package:iroko/core/constants/app_constants.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -12,7 +11,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _selectedServiceType = AppConstants.serviceTypeTutoring;
 
   @override
   void initState() {
@@ -42,13 +40,7 @@ class _HomeScreenState extends State<HomeScreen>
               Tab(text: 'Entretien'),
             ],
             onTap: (index) {
-              setState(() {
-                _selectedServiceType = [
-                  AppConstants.serviceTypeTutoring,
-                  AppConstants.serviceTypeRecruitment,
-                  AppConstants.serviceTypeMaintenance,
-                ][index];
-              });
+              // Tab switching is handled by TabController
             },
           ),
         ),
@@ -166,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen>
     return Chip(
       label: Text(label),
       onDeleted: () {},
-      backgroundColor: AppTheme.primaryLight.withOpacity(0.1),
+      backgroundColor: AppTheme.primaryLight.withValues(alpha: 0.1),
       labelStyle: const TextStyle(color: AppTheme.primaryColor),
     );
   }
@@ -273,9 +265,9 @@ class _HomeScreenState extends State<HomeScreen>
           children: [
             Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   backgroundColor: AppTheme.secondaryColor,
-                  child: const Icon(Icons.cleaning_services, color: Colors.white),
+                  child: Icon(Icons.cleaning_services, color: Colors.white),
                 ),
                 const SizedBox(width: AppTheme.spacingMedium),
                 Expanded(

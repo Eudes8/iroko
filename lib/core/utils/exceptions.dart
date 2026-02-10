@@ -12,60 +12,39 @@ abstract class AppException implements Exception {
 }
 
 class ServerException extends AppException {
-  ServerException({
-    required String message,
-    String? code,
-  }) : super(message: message, code: code);
+  ServerException({required super.message, super.code});
 }
 
 class NetworkException extends AppException {
-  NetworkException({
-    required String message,
-    String? code,
-  }) : super(message: message, code: code);
+  NetworkException({required super.message, super.code});
 }
 
 class CacheException extends AppException {
-  CacheException({
-    required String message,
-    String? code,
-  }) : super(message: message, code: code);
+  CacheException({required super.message, super.code});
 }
 
 class ValidationException extends AppException {
   final Map<String, String>? errors;
 
   ValidationException({
-    required String message,
-    String? code,
+    required super.message,
+    super.code,
     this.errors,
-  }) : super(message: message, code: code);
+  });
 }
 
 class AuthenticationException extends AppException {
-  AuthenticationException({
-    required String message,
-    String? code,
-  }) : super(message: message, code: code);
+  AuthenticationException({required super.message, super.code});
 }
 
 class AuthorizationException extends AppException {
-  AuthorizationException({
-    required String message,
-    String? code,
-  }) : super(message: message, code: code);
+  AuthorizationException({required super.message, super.code});
 }
 
 class NotFoundException extends AppException {
-  NotFoundException({
-    required String message,
-    String? code,
-  }) : super(message: message, code: code);
+  NotFoundException({required super.message, super.code});
 }
 
 class ConflictException extends AppException {
-  ConflictException({
-    required String message,
-    String? code,
-  }) : super(message: message, code: code);
+  ConflictException({required super.message, super.code});
 }

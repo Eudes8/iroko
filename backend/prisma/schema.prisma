@@ -1,0 +1,209 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  phone     String?
+  role      UserRole @default(CLIENT)
+  bio       String?
+  profileImage  String?
+  isVerified    Boolean @default(false)
+  averageRating Float   @default(0)
+  reviewCount   Int     @default(0)
+  specialties   String[]
+  hourlyRate    Float?
+  location      String?
+  certifications String[]
+  providerType  String?
+
+  clientMissions    Mission[] @relation("client")
+  providerMissions  Mission[] @relation("provider")
+  paymentsAsClient  Payment[] @relation("client")
+  paymentsAsProvider Payment[] @relation("provider")
+  ratings           Rating[] @relation("rated")
+  givenRatings      Rating[] @relation("ratingGiver")
+  walletTransactions WalletTransaction[]
+  messages          Message[] @relation("sender")
+  receivedMessages  Message[] @relation("recipient")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([role])
+  @@index([isVerified])
+}
+
+enum UserRole {
+  CLIENT
+  PROVIDER
+  ADMIN
+}
+
+model Mission {
+  id              String   @id @default(cuid())
+  clientId        String
+  providerId      String?
+  serviceType     ServiceType
+  title           String
+  description     String
+  category        String?
+  level           String?
+  scheduledDate   DateTime
+  durationMinutes Int
+  price           Float
+  commission      Float
+  status          MissionStatus @default(PENDING)
+  paymentStatus   PaymentStatus @default(PENDING)
+  clientRating    String?
+  clientRatingValue Int?
+  providerRating  String?
+  providerRatingValue Int?
+
+  client          User     @relation("client", fields: [clientId], references: [id], onDelete: Cascade)
+  provider        User?    @relation("provider", fields: [providerId], references: [id], onDelete: SetNull)
+  payment         Payment?
+  messages        Message[]
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([providerId])
+  @@index([status])
+  @@index([serviceType])
+  @@index([createdAt])
+}
+
+enum ServiceType {
+  TUTORING
+  RECRUITMENT
+  MAINTENANCE
+}
+
+enum MissionStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  RELEASED
+  REFUNDED
+}
+
+model Payment {
+  id                String   @id @default(cuid())
+  missionId         String   @unique
+  clientId          String
+  providerId        String
+  amount            Float
+  commission        Float
+  providerEarnings  Float
+  paymentMethod     PaymentMethod
+  status            PaymentStatus @default(PENDING)
+  escrowStatus      EscrowStatus @default(HELD)
+  transactionId     String?
+  stripePaymentIntentId String?
+
+  mission           Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  client            User     @relation("client", fields: [clientId], references: [id], onDelete: Cascade)
+  provider          User     @relation("provider", fields: [providerId], references: [id], onDelete: Cascade)
+  completedAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([providerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum PaymentMethod {
+  CARD
+  MOBILE_MONEY
+  BANK_TRANSFER
+}
+
+enum EscrowStatus {
+  HELD
+  RELEASED
+  REFUNDED
+}
+
+model Rating {
+  id        String   @id @default(cuid())
+  userId    String
+  ratedBy   String
+  missionId String?
+  rating    Int
+  review    String?
+
+  user      User     @relation("rated", fields: [userId], references: [id], onDelete: Cascade)
+  rater     User     @relation("ratingGiver", fields: [ratedBy], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, ratedBy])
+  @@index([userId])
+  @@index([ratedBy])
+  @@index([rating])
+}
+
+model WalletTransaction {
+  id          String  @id @default(cuid())
+  userId      String
+  paymentId   String?
+  missionId   String?
+  type        TransactionType
+  amount      Float
+  description String
+  status      String @default("completed")
+
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  missionId   String
+  senderId    String
+  recipientId String
+  content     String
+  isRead      Boolean  @default(false)
+  readAt      DateTime?
+
+  mission     Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  sender      User     @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient   User     @relation("recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([missionId])
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([isRead])
+  @@index([createdAt])
+}

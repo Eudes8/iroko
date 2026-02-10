@@ -100,37 +100,24 @@ class Provider extends User {
   final String? providerType; // 'tutor', 'housekeeping', 'recruiter'
 
   Provider({
-    required String id,
-    required String email,
-    required String name,
-    String? phone,
-    String? profileImage,
-    required String role,
-    String? bio,
-    double? averageRating,
-    int? reviewCount,
-    required bool isVerified,
-    required DateTime createdAt,
-    required DateTime updatedAt,
+    required super.id,
+    required super.email,
+    required super.name,
+    super.phone,
+    super.profileImage,
+    required super.role,
+    super.bio,
+    super.averageRating,
+    super.reviewCount,
+    required super.isVerified,
+    required super.createdAt,
+    required super.updatedAt,
     this.specialties,
     this.hourlyRate,
     this.location,
     this.certifications,
     this.providerType,
-  }) : super(
-    id: id,
-    email: email,
-    name: name,
-    phone: phone,
-    profileImage: profileImage,
-    role: role,
-    bio: bio,
-    averageRating: averageRating,
-    reviewCount: reviewCount,
-    isVerified: isVerified,
-    createdAt: createdAt,
-    updatedAt: updatedAt,
-  );
+  });
 
   factory Provider.fromJson(Map<String, dynamic> json) {
     final user = User.fromJson(json);

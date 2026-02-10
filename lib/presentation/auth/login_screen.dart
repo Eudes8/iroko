@@ -5,7 +5,7 @@ import 'package:iroko/core/theme/app_theme.dart';
 import 'package:iroko/presentation/providers/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -27,7 +27,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       final authProvider = context.read<AuthProvider>();
-      
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
+      final router = GoRouter.of(context);
+
       final success = await authProvider.login(
         _emailController.text.trim(),
         _passwordController.text,
@@ -35,9 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (mounted) {
         if (success) {
-          context.go('/home');
+          router.go('/home');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
+          scaffoldMessenger.showSnackBar(
             SnackBar(
               content: Text(authProvider.errorMessage ?? 'Erreur de connexion'),
               backgroundColor: Colors.red,
@@ -190,8 +192,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: AppTheme.spacingMedium),
               // Divider
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Expanded(child: Divider(color: AppTheme.grey300)),
                   Padding(
                     padding:

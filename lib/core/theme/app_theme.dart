@@ -128,13 +128,13 @@ class AppTheme {
           ),
         ),
       ),
-      chipTheme: ChipThemeData(
+      chipTheme: const ChipThemeData(
         backgroundColor: grey100,
         selectedColor: primaryColor,
-        labelStyle: const TextStyle(color: black),
-        secondaryLabelStyle: const TextStyle(color: white),
+        labelStyle: TextStyle(color: black),
+        secondaryLabelStyle: TextStyle(color: white),
         brightness: Brightness.light,
-        padding: const EdgeInsets.symmetric(horizontal: spacingSmall),
+        padding: EdgeInsets.symmetric(horizontal: spacingSmall),
       ),
       cardTheme: CardThemeData(
         elevation: elevationSmall,

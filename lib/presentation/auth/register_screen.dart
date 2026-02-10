@@ -4,7 +4,7 @@ import 'package:iroko/core/theme/app_theme.dart';
 import 'package:iroko/presentation/providers/auth_provider.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -33,7 +33,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _handleRegister(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       final authProvider = context.read<AuthProvider>();
-      
+      final navigator = Navigator.of(context);
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
+
       final success = await authProvider.register(
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -44,9 +46,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (mounted) {
         if (success) {
           // Navigate to home screen
-          Navigator.of(context).pushReplacementNamed('/home');
+          navigator.pushReplacementNamed('/home');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
+          scaffoldMessenger.showSnackBar(
             SnackBar(
               content: Text(authProvider.errorMessage ?? 'Erreur lors de l\'inscription'),
               backgroundColor: Colors.red,
@@ -245,7 +247,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                                 color: _selectedRole == 'client'
-                                    ? AppTheme.primaryColor.withOpacity(0.1)
+                                    ? AppTheme.primaryColor.withValues(alpha: 0.1)
                                     : AppTheme.white,
                               ),
                               child: Column(
@@ -289,7 +291,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                                 color: _selectedRole == 'provider'
-                                    ? AppTheme.primaryColor.withOpacity(0.1)
+                                    ? AppTheme.primaryColor.withValues(alpha: 0.1)
                                     : AppTheme.white,
                               ),
                               child: Column(

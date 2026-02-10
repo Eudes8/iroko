@@ -77,7 +77,7 @@ Le projet suit une **Clean Architecture** avec injection de dépendances.
 - **Dio** - Client HTTP
 - **Provider** - Gestion d'état
 - **GetIt** - Service Locator
-- **Firebase** - Auth & Analytics
+- **Node.js/Express** - Backend API
 - **Stripe** - Paiements
 
 ## 🚀 Lancer sur d'autres platforms

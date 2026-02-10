@@ -1,6 +1,10 @@
 class AppConstants {
-  // API
-  static const String baseUrl = 'https://api.iroko.ci/v1';
+  // API Configuration - Node.js/PostgreSQL Backend
+  // IMPORTANT: Mettre à jour avec votre URL backend réelle
+  static const String baseUrl = 'http://localhost:3000/api/v1'; // Dev local
+  // static const String baseUrl = 'http://10.0.2.2:3000/api/v1'; // Android emulator
+  // static const String baseUrl = 'https://iroko-backend.railway.app/api/v1'; // Production
+  
   static const String socketUrl = 'https://socket.iroko.ci';
   
   // Timeouts

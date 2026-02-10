@@ -25,7 +25,7 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
 
       final useCase = await _getIt.getAsync<GetCurrentUserUseCase>();
-      _user = await useCase();
+      _user = await useCase.call(const NoParams());
       _isLoading = false;
       notifyListeners();
     } on AppException catch (e) {
@@ -61,7 +61,8 @@ class UserProvider extends ChangeNotifier {
       };
 
       final useCase = await _getIt.getAsync<UpdateProfileUseCase>();
-      _user = await useCase(data);
+      final updateParams = UpdateProfileParams(data: data);
+      _user = await useCase.call(updateParams);
       _isLoading = false;
       notifyListeners();
       return true;

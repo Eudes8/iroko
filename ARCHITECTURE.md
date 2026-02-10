@@ -47,8 +47,8 @@ lib/
 - `http` - Client HTTP alternatif
 
 ### Authentification
-- `firebase_auth` - Authentification avec Firebase
-- `google_sign_in` - Connexion Google
+- JWT Bearer tokens - Authentification avec Backend
+- `shared_preferences` - Stockage sécurisé du token
 
 ### Paiements
 - `stripe_flutter` - Intégration Stripe pour paiements

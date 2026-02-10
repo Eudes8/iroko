@@ -2,50 +2,28 @@ import 'package:iroko/domain/entities/mission.dart';
 
 class MissionModel extends Mission {
   MissionModel({
-    required String id,
-    required String clientId,
-    required String providerId,
-    required String serviceType,
-    required String title,
-    required String description,
-    String? category,
-    String? level,
-    required DateTime scheduledDate,
-    required int durationMinutes,
-    required double price,
-    double? commission,
-    required String status,
-    required String paymentStatus,
-    String? clientRating,
-    int? clientRatingValue,
-    String? providerRating,
-    int? providerRatingValue,
-    required DateTime createdAt,
-    required DateTime updatedAt,
-    DateTime? completedAt,
-  }) : super(
-    id: id,
-    clientId: clientId,
-    providerId: providerId,
-    serviceType: serviceType,
-    title: title,
-    description: description,
-    category: category,
-    level: level,
-    scheduledDate: scheduledDate,
-    durationMinutes: durationMinutes,
-    price: price,
-    commission: commission,
-    status: status,
-    paymentStatus: paymentStatus,
-    clientRating: clientRating,
-    clientRatingValue: clientRatingValue,
-    providerRating: providerRating,
-    providerRatingValue: providerRatingValue,
-    createdAt: createdAt,
-    updatedAt: updatedAt,
-    completedAt: completedAt,
-  );
+    required super.id,
+    required super.clientId,
+    required super.providerId,
+    required super.serviceType,
+    required super.title,
+    required super.description,
+    super.category,
+    super.level,
+    required super.scheduledDate,
+    required super.durationMinutes,
+    required super.price,
+    super.commission,
+    required super.status,
+    required super.paymentStatus,
+    super.clientRating,
+    super.clientRatingValue,
+    super.providerRating,
+    super.providerRatingValue,
+    required super.createdAt,
+    required super.updatedAt,
+    super.completedAt,
+  });
 
   factory MissionModel.fromJson(Map<String, dynamic> json) {
     return MissionModel(
@@ -75,6 +53,4 @@ class MissionModel extends Mission {
     );
   }
 
-  @override
-  Map<String, dynamic> toJson() => super.toJson();
 }

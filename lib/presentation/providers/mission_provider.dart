@@ -38,7 +38,12 @@ class MissionProvider extends ChangeNotifier {
       };
 
       final useCase = await _getIt.getAsync<SearchMissionsUseCase>();
-      _missions = await useCase(filters: _filters);
+      final params = SearchMissionsParams(
+        serviceType: _filters['type'],
+        location: _filters['location'],
+        page: 1,
+      );
+      _missions = await useCase.call(params);
       _isLoading = false;
       notifyListeners();
     } on AppException catch (e) {
@@ -60,7 +65,7 @@ class MissionProvider extends ChangeNotifier {
       notifyListeners();
 
       final useCase = await _getIt.getAsync<GetMissionByIdUseCase>();
-      _selectedMission = await useCase(id: id);
+      _selectedMission = await useCase.call(id);
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -77,7 +82,18 @@ class MissionProvider extends ChangeNotifier {
       notifyListeners();
 
       final useCase = await _getIt.getAsync<CreateMissionUseCase>();
-      final newMission = await useCase(mission: mission);
+      final params = CreateMissionParams(
+        serviceType: mission.serviceType,
+        title: mission.title,
+        description: mission.description,
+        category: mission.category,
+        level: mission.level,
+        scheduledDate: mission.scheduledDate,
+        durationMinutes: mission.durationMinutes,
+        price: mission.price,
+        providerId: mission.providerId,
+      );
+      final newMission = await useCase.call(params);
       _missions.insert(0, newMission);
       _isLoading = false;
       notifyListeners();
@@ -97,7 +113,7 @@ class MissionProvider extends ChangeNotifier {
       notifyListeners();
 
       final useCase = await _getIt.getAsync<AcceptMissionUseCase>();
-      final mission = await useCase(id: id);
+      final mission = await useCase.call(id);
       
       final index = _missions.indexWhere((m) => m.id == id);
       if (index >= 0) {
@@ -125,7 +141,7 @@ class MissionProvider extends ChangeNotifier {
       notifyListeners();
 
       final useCase = await _getIt.getAsync<CompleteMissionUseCase>();
-      final mission = await useCase(id: id);
+      final mission = await useCase.call(id);
       
       final index = _missions.indexWhere((m) => m.id == id);
       if (index >= 0) {

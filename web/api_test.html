@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IROKO API Testing</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 IROKO Backend API Testing</h1>
+            <p>Interface Web de Test - Firefox Web Server</p>
+        </header>
+
+        <main>
+            <section class="status-section">
+                <h2>📊 État du Système</h2>
+                <div class="grid">
+                    <div class="status-card">
+                        <h3>API Backend</h3>
+                        <p id="backend-status" class="status pending">⏳</p>
+                        <button onclick="testBackend()">Tester</button>
+                    </div>
+                    <div class="status-card">
+                        <h3>Base de Données</h3>
+                        <p id="db-status" class="status pending">⏳</p>
+                        <button onclick="testDatabase()">Tester</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="api-section">
+                <h2>🔌 Test Endpoints</h2>
+                
+                <div class="test-box">
+                    <h3>1. GET /health</h3>
+                    <button onclick="testHealth()">Tester Health</button>
+                    <div id="health-result" class="result"></div>
+                </div>
+
+                <div class="test-box">
+                    <h3>2. POST /api/v1/auth/sign-up</h3>
+                    <input type="email" id="signup-email" placeholder="Email" />
+                    <input type="password" id="signup-pass" placeholder="Mot de passe" />
+                    <input type="text" id="signup-name" placeholder="Nom" />
+                    <select id="signup-role">
+                        <option>client</option>
+                        <option>provider</option>
+                    </select>
+                    <button onclick="testSignup()">S'inscrire</button>
+                    <div id="signup-result" class="result"></div>
+                </div>
+
+                <div class="test-box">
+                    <h3>3. POST /api/v1/auth/login</h3>
+                    <input type="email" id="login-email" placeholder="Email" />
+                    <input type="password" id="login-pass" placeholder="Mot de passe" />
+                    <button onclick="testLogin()">Se connecter</button>
+                    <div id="login-result" class="result"></div>
+                </div>
+
+                <div class="test-box">
+                    <h3>Token Storage</h3>
+                    <button onclick="showToken()">Voir Token</button>
+                    <button onclick="clearTokens()">Effacer Token</button>
+                    <div id="token-result" class="result"></div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>🚀 IROKO API | Testing Backend REST API</p>
+        </footer>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+        const API_V1 = 'http://localhost:3000/api/v1';
+
+        async function fetchAPI(path, method = 'GET', body = null, baseUrl = API_V1) {
+            const headers = { 'Content-Type': 'application/json' };
+            const token = localStorage.getItem('token');
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            const options = { method, headers };
+            if (body) options.body = JSON.stringify(body);
+
+            try {
+                const response = await fetch(baseUrl + path, options);
+                const data = await response.json();
+                return { ok: response.ok, status: response.status, data };
+            } catch (e) {
+                return { ok: false, error: e.message };
+            }
+        }
+
+        async function testHealth() {
+            const res = await fetchAPI('/health', 'GET', null, API_URL);
+            const el = document.getElementById('health-result');
+            if (res.ok) {
+                el.className = 'result success';
+                el.innerHTML = `✅ Backend OK<br>${res.data.message}`;
+            } else {
+                el.className = 'result error';
+                el.innerHTML = '❌ Erreur';
+            }
+        }
+
+        async function testBackend() {
+            await testHealth();
+        }
+
+        async function testDatabase() {
+            const res = await fetchAPI('/users/test', 'GET');
+            const el = document.getElementById('db-status');
+            if (res.status === 401 || res.status === 404) {
+                el.textContent = '✅ OK';
+                el.className = 'status success';
+            } else {
+                el.textContent = '❌ Erreur';
+                el.className = 'status error';
+            }
+        }
+
+        async function testSignup() {
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-pass').value;
+            const name = document.getElementById('signup-name').value;
+            const role = document.getElementById('signup-role').value;
+
+            const res = await fetchAPI('/auth/sign-up', 'POST', { email, password, name, role });
+            const el = document.getElementById('signup-result');
+
+            if (res.ok && res.data.token) {
+                localStorage.setItem('token', res.data.token);
+                el.className = 'result success';
+                el.innerHTML = `✅ Inscription OK<br>Token: ${res.data.token.substring(0, 20)}...`;
+            } else {
+                el.className = 'result error';
+                el.innerHTML = `❌ ${res.data?.message || res.error}`;
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-pass').value;
+
+            const res = await fetchAPI('/auth/login', 'POST', { email, password });
+            const el = document.getElementById('login-result');
+
+            if (res.ok && res.data.token) {
+                localStorage.setItem('token', res.data.token);
+                el.className = 'result success';
+                el.innerHTML = `✅ Connexion OK<br>User: ${res.data.user.name}`;
+            } else {
+                el.className = 'result error';
+                el.innerHTML = `❌ ${res.data?.message || res.error}`;
+            }
+        }
+
+        function showToken() {
+            const token = localStorage.getItem('token');
+            const el = document.getElementById('token-result');
+            if (token) {
+                el.className = 'result success';
+                el.innerHTML = `Token: <code>${token}</code>`;
+            } else {
+                el.className = 'result error';
+                el.innerHTML = 'Aucun token';
+            }
+        }
+
+        function clearTokens() {
+            localStorage.removeItem('token');
+            document.getElementById('token-result').className = 'result success';
+            document.getElementById('token-result').innerHTML = 'Token effacé';
+        }
+
+        window.addEventListener('load', () => {
+            testBackend();
+        });
+    </script>
+</body>
+</html>

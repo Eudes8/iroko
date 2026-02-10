@@ -7,29 +7,20 @@ class BookingScreen extends StatefulWidget {
   final String missionId;
 
   const BookingScreen({
-    Key? key,
+    super.key,
     required this.missionId,
-  }) : super(key: key);
+  });
 
   @override
   State<BookingScreen> createState() => _BookingScreenState();
 }
 
 class _BookingScreenState extends State<BookingScreen> {
-  late DateTime _selectedDate;
-  late TimeOfDay _startTime;
-  late TimeOfDay _endTime;
-  int _durationHours = 1;
-  double _hourlyRate = 5000;
-  double _totalPrice = 5000;
   final _descriptionController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _selectedDate = DateTime.now().add(const Duration(days: 1));
-    _startTime = const TimeOfDay(hour: 9, minute: 0);
-    _endTime = const TimeOfDay(hour: 10, minute: 0);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<MissionProvider>().getMissionById(widget.missionId);
     });
@@ -39,12 +30,6 @@ class _BookingScreenState extends State<BookingScreen> {
   void dispose() {
     _descriptionController.dispose();
     super.dispose();
-  }
-
-  void _updateTotalPrice() {
-    setState(() {
-      _totalPrice = _hourlyRate * _durationHours;
-    });
   }
 
   @override
