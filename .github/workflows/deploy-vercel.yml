@@ -55,6 +55,14 @@ jobs:
       - name: Build Flutter Web
         run: flutter build web --release
 
+      - name: Copy backend to api directory
+        run: |
+          mkdir -p api/dist
+          cp -r backend/dist/* api/dist/
+          cp backend/package.json api/
+          cp backend/package-lock.json api/ 2>/dev/null || true
+          cp backend/tsconfig.json api/ 2>/dev/null || true
+
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
