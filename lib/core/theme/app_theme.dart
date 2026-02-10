@@ -136,13 +136,6 @@ class AppTheme {
         brightness: Brightness.light,
         padding: EdgeInsets.symmetric(horizontal: spacingSmall),
       ),
-      cardTheme: CardThemeData(
-        elevation: elevationSmall,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
-        ),
-        color: white,
-      ),
     );
   }
 
